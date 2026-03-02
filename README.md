@@ -12,9 +12,9 @@ Designing a chip means balancing three things that are always in tension:
 - **Power**: how much energy does it use?
 - **Size** : how much physical space does it take up?
 
-Finding settings that hit the right balance is slow, expensive work. Engineers often spend weeks testing combinations manually. With even 8 settings and 10 possible values each, there are 100 million possible combinations, far too many to explore by hand.
+Finding settings that hit the right balance is slow, expensive work. Engineers often spend weeks manually testing combinations. With even 8 settings and 10 possible values each, there are 100 million possible combinations, far too many to explore by hand.
 
-Blur cuts through that. It uses AI to identify which settings are worth testing, skips the ones that won't pan out, and homes in on good results fast.
+Blur cuts through that. It uses AI to identify which settings are worth testing, skips the ones that won't work out, and dials in on good results fast.
 
 ## How it works
 
@@ -22,10 +22,10 @@ Blur cuts through that. It uses AI to identify which settings are worth testing,
 2. The AI picks a set of promising configurations to test
 3. Blur runs them through the chip design tool automatically
 4. The results get saved and fed back to the AI
-5. The AI uses what it learned to pick better options next round
+5. The AI uses what it learned to pick better options in the next round
 6. The loop repeats until you've hit your target or used up your attempts
 
-The dashboard shows every run, every result, and what the AI is recommending so you always know what's happening.
+The dashboard shows every run, every result, and what the AI is recommending, so you always know what's happening.
 
 ## Tech stack
 
