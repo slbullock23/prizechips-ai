@@ -18,7 +18,7 @@ Blur cuts through that. It uses AI to identify which settings are worth testing,
 
 ## How it works
 
-1. You enter your goals — speed target, power limit, size constraint — and choose which settings to tune
+1. You enter your goals: speed target, power limit, size constraint and choose which settings to tune
 2. The AI picks a set of promising configurations to test
 3. Blur runs them through the chip design tool automatically
 4. The results get saved and fed back to the AI
