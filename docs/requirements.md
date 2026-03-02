@@ -1,160 +1,75 @@
-# 📋 The Requirements
+# Requirements
+###### This document outlines what the system must do, how it should feel to users, and the minimum AI expectations required for this product.
 
-This document outlines what the system must do, how it should feel to users, and the minimum AI expectations required for this product.
+___
 
----
+## Functional Requirements - What does it do?
 
-## 1. Functional Requirements (What It Does)
+- User can input specific constraints.
+- User can view output in an organized and visually attractive manner.
 
-- Users can create an account and authenticate securely  
-- Users can create or join a **decision group**  
-- Users can submit:
-  - A decision (prediction, choice, or recommendation)
-  - A confidence score (percentage-based)
-- Users can post, edit, archive, or delete their own decisions  
-- Users can comment on decisions made by others in the group  
-- The system records outcomes once results are known  
-- The system stores:
-  - Users
-  - Groups
-  - Decisions
-  - Confidence scores
-  - Outcomes
-  - Comments
-- A leaderboard displays:
-  - Individual accuracy
-  - Group accuracy
-  - Historical performance trends
-- Users can view past decisions and compare:
-  - Initial confidence
-  - Final outcome
-  - AI feedback (if available)
+- Users can create an account and authenticate securely.
 
----
+- Users can easily access past inputs and outputs.
 
-## 2. Non-Functional Requirements (How It Feels)
+- User can see why certain constraints would or would not work.
 
-### Fast
-- Decision submissions and feedback appear in **under 1 second**  
-- Returning users can submit and comment on decisions in **under 1 minute**
 
-### Fair
-- Decisions and confidence scores **cannot be edited after submission**  
-- Outcomes are recorded transparently and immutably  
+## Non-Functional Requirements - How does it feel?
 
-### Secure
 - Each profile requires password-based authentication  
+
 - Passwords must be hashed using **bcrypt**  
-- Unauthorized users are denied access to profiles and decision data  
 
-### Simple
-- No complex setup or onboarding  
-- Feels like a **group chat with structure**  
-- Confidence scoring is intuitive and percentage-based  
+- Unauthorized users are denied access to profiles and decision data
 
-### Responsive
-- Adapts to varying screen sizes on **Android and iOS**  
-- Usable on small and large devices  
+- System adapts to varying screen sizes.
 
----
+- System functions on small and large devices
 
-## 3. AI-Specific Requirements
+- Decision submissions and feedback appear in a few minutes (**under 10 minutes**)
 
-- The system provides an **AI assistant** to support decision-making  
-- AI capabilities include:
-  - Analyzing group confidence distributions  
-  - Detecting risk, disagreement, or overconfidence  
-  - Providing plain-language feedback  
-- AI **enhances decisions but never blocks them**  
-- The system functions fully **without AI**
-  - Decisions are still logged  
-  - Outcomes are still scored  
-  - Leaderboards still update  
-- If AI is unavailable:
-  - The app continues normal operation  
-  - Users are notified that AI feedback is temporarily unavailable  
-- AI responses must be:
-  - Explainable  
-  - Non-technical  
-  - Actionable  
----
 
-## 4. User Stories
 
-### Administrator / Developer
 
-**As an administrator or developer**,  
-I want to see all registered users   so that I can track platform usage and growth.
+## AI Specific Requirements
 
-**Acceptance Criteria**
-- Admin can view every registered user  
-- Admin can see total user count  
-- Admin can view high-level usage metrics  
+### The AI layer must be able to:
 
----
+- Understand constraints
 
-### Offline Access
+- Generate legal designs
 
-**As a user**,  
-I want to submit decisions without an internet connection so that I can use the app anywhere.
+- Learn from results
 
-**Acceptance Criteria**
-- Users can submit decisions offline  
-- Decisions are queued locally  
-- Decisions sync automatically once reconnected  
+- Explain itself
 
----
+- Validate configurations
 
-### Team Management
+- Integrate tightly with the system
 
-**As a team leader**,  
-I want to manage my decision group so that I can control participation.
+- Protect data
 
-**Acceptance Criteria**
-- Users can view:
-  - Number of group members  
-  - Member names  
-  - Decisions made by each member  
-- Users can add members  
-- Users can remove members  
+- Improve over time
 
----
 
-### Confidence Scoring
+## User Stories
+###### "As a [type of user], I want [goal] so that [reason/benefit]."
 
-**As a user**,  
-I want to enter a confidence score for my decision so that accuracy can be measured over time.
+1. As a physical design engineer, I want the AI to suggest new configurations that improve timing so that I can reach timing closure faster without manual trial-and-error.
+    - AC1: Given a set of timing reports, the AI must generate at least N candidate configurations that attempt to reduce worst negative slack (WNS) or total negative slack (TNS). 
 
-**Acceptance Criteria**
-- Confidence scores are entered as percentages  
-- Confidence scores are locked after submission  
-- AI uses confidence scores when analyzing decisions  
+2. As a physical design engineer, I want to set hard constraints on power, area, and timing so that the AI never proposes configurations that violate my design targets.
+    - AC1: User must be able to set min/max thresholds for power, area, and timing in the UI.
+    - AC5: The UI must show which constraints were applied to each generated configuration.
 
----
+3. As a physical design engineer, I want the AI to avoid previously failed configurations so that compute time isn’t wasted repeating bad runs.
+    - AC1: The system must store a history of all previous configurations and their outcomes.
+    - AC2: The AI must check new candidate configurations against the historical dataset before proposing them.
 
-### Leaderboard & Accuracy Tracking
+4. As a physical design engineer, I want the AI to explain why a configuration is recommended so that I can trust and validate its choices.
 
-**As a competitive group member**,  
-I want to see a leaderboard  
-so that I can evaluate my decision accuracy.
+    - AC2: The explanation must reference specific expected improvements (e.g., “reduces congestion in region X”, “improves WNS by tightening CTS parameters”).
 
-**Acceptance Criteria**
-- Leaderboards show individual and group accuracy  
-- Users can compare:
-  - Confidence scores  
-  - AI-generated evaluations  
-- Users must be within **10% of AI evaluation** to improve ranking  
-- Consistently low-ranked users receive in-app warnings  
 
----
 
-### Terms and Conditions
-
-**As a user**,  
-I want to read and accept the terms and conditions  
-so that I understand the rules and risks.
-
-**Acceptance Criteria**
-- Users can read or listen to the terms  
-- Users must scroll through all content before accepting  
-- Acceptance is required before accessing core features  
