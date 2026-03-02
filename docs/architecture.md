@@ -5,6 +5,7 @@ This document explains how the frontend, backend, database, and AI layer connect
 
 ---
 
+
 ## System Components
 The system is composed of four main pieces:
 
