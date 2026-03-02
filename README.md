@@ -1,96 +1,88 @@
-# 🧠 Collaborative Decision-Making
+# Blur
 
-**Make better decisions together and see what actually works.**
+**AI-powered chip design optimization. Better results in fewer runs.**
 
-A collaborative decision-making app that tracks **decisions, confidence, and accuracy over time**.  
-Instead of just collecting opinions, it helps groups learn from outcomes.
+Blur is a platform that uses AI to automatically find the best settings for a chip design. Instead of guessing and checking by hand, you tell Blur what you want, and it figures out what to try next, getting smarter with each attempt.
 
-Think: **a structured group chat for decisions**, powered by data (and AI).
+## The problem it solves
 
----
+Designing a chip means balancing three things that are always in tension:
 
-## 🚩 The Problem
+- **Speed**: how fast does it run?
+- **Power**: how much energy does it use?
+- **Size** : how much physical space does it take up?
 
-Group decisions usually fall apart because:
+Finding settings that hit the right balance is slow, expensive work. Engineers often spend weeks testing combinations manually. With even 8 settings and 10 possible values each, there are 100 million possible combinations, far too many to explore by hand.
 
-- The loudest voice wins  
-- Confidence isn’t measured  
-- Outcomes aren’t tracked  
-- Accuracy is never evaluated  
+Blur cuts through that. It uses AI to identify which settings are worth testing, skips the ones that won't pan out, and homes in on good results fast.
 
-Chats, polls, and spreadsheets record opinions, **not decision quality**.
+## How it works
 
----
+1. You enter your goals — speed target, power limit, size constraint — and choose which settings to tune
+2. The AI picks a set of promising configurations to test
+3. Blur runs them through the chip design tool automatically
+4. The results get saved and fed back to the AI
+5. The AI uses what it learned to pick better options next round
+6. The loop repeats until you've hit your target or used up your attempts
 
-## 🎯 The Solution
+The dashboard shows every run, every result, and what the AI is recommending so you always know what's happening.
 
-This app lets groups:
+## Tech stack
 
-- Submit decisions with confidence scores  
-- Track outcomes once results are known  
-- See individual and group accuracy over time  
-- Get optional AI feedback on group patterns  
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js |
+| Backend | FastAPI (Python) |
+| AI | Ollama (runs locally) |
+| Optimization | Bayesian Optimization |
+| Database | PostgreSQL |
+| Chip design tool | OpenROAD |
+| Containers | Docker |
 
-The goal is **better judgment through feedback and accountability**, not replacing people.
+## Getting started
 
----
+### Prerequisites
 
-## 👥 Who It’s For
+- [Docker](https://www.docker.com/) and Docker Compose installed
+- Git
 
-Small groups (5–20 people) making repeat decisions:
+### Run locally
 
-- Student teams  
-- Friend groups (sports, debates)  
-- Clubs and organizations  
-- Beginner finance or banking groups  
+```bash
+# Clone the repo
+git clone https://github.com/slbullock23/ai-decisionmaking.git
+cd blur
 
-> Sports and banking are our test cases.
+# Start all 
+docker compose up --build
+```
 
----
+Once running:
 
-## ✨ Core Features
+- **Frontend** → http://localhost:3000
+- **Backend API** → http://localhost:8000
+- **API docs** → http://localhost:8000/docs
 
-- Create or join decision groups  
-- Submit decisions with confidence  
-- Accuracy leaderboards (individual + group)  
-- Decision history and outcome tracking  
-- AI feedback on disagreement and overconfidence  
-- Fully functional even without AI  
+## Project structure
 
----
+```
+ai-decisionmaking/
+├── frontend/        # Next.js web interface
+├── backend/         # FastAPI server and optimization logic
+├── docs/            # Architecture, Proposal and Requirements
+```
 
-## 🏗️ Architecture
+## Who it's for
 
-- **Frontend:** Next.js  
-- **Backend:** FastAPI  
-- **Database:** PostgreSQL  
-- **AI Runtime:** Ollama (local)
+- **Physical design engineers** who want to stop guessing and start optimizing
+- **CAD engineers** looking to automate repetitive tuning work
+- **Hardware startups** that need fast, affordable design iteration without a big team
 
-### Data Flow
+## Why local AI?
 
-1. User submits a decision + confidence  
-2. Backend validates and stores data  
-3. AI analyzes group patterns (optional)  
-4. Feedback is returned  
-5. Outcomes are logged later for scoring  
+Blur runs the AI model on your own machine using Ollama. That means:
 
----
-
-## 🤖 AI Principles
-
-- AI advises, it does not decide  
-- AI never blocks decisions  
-- The app works without AI  
-- All feedback is explainable  
-
----
-
-## 📈 Vision
-
-Over time, the app reveals:
-
-- Who is consistently accurate  
-- When groups outperform individuals  
-- How confidence matches reality  
-
-**Smarter groups. Better decisions**
+- Your design data never leaves your network
+- No usage fees or API costs
+- Works offline
+- You choose which model to run
