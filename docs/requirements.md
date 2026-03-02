@@ -1,8 +1,6 @@
 # Requirements
 ###### This document outlines what the system must do, how it should feel to users, and the minimum AI expectations required for this product.
 
-___
-
 ## Functional Requirements - What does it do?
 
 - User can input specific constraints.
