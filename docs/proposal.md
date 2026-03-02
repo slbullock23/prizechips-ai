@@ -1,58 +1,60 @@
-# 💡 The Proposal
-*"What problem are we actually solving?"*
+# Blur's Proposal
 
----
+## Using AI to Make Chip Design Faster and Cheaper
+*How can we make designing chips quicker, more affordable, and smarter?*
 
-## Problem Statement
+## Our Elevator Pitch
+When engineers design chips, they need to balance three things: how much power it uses, how fast it runs, and how physically small it is. Right now, finding the right balance means a lot of slow, manual guessing. We're building an AI tool that does that searching automatically, finding better designs in fewer attempts, saving time, money, and effort.
 
-Groups make decisions all the time: friends, teams, clubs, and student organizations. Yet those decisions are often inconsistent. The loudest voice tends to win, confidence is rarely measured, and there is no clear record of who was actually right.
+## Who We're Building This For
+Our tool is for people who design and build chips:
 
-Existing tools like group chats and polls account for opinions, not the quality of the decisions being made. As a result, there is no reliable way to tell whether a group decision is better than a single person’s.
+- Physical Design Engineers
+- CAD Engineers
+- Hardware startups
 
----
+## What We're Building
+We're building an AI-powered platform that automatically finds the best settings for a chip design.
 
-## Target Users
+Instead of guessing manually, users tell the system:
 
-**Small, focused groups (5–20 people) making repeat decisions**, such as:
+- What their chip needs to do
+- What matters most (ex. speed vs. size)
+- How many attempts they want to use
 
-- Students working on group projects  
-- Friends debating sports outcomes  
-- Clubs deciding on budgets or events  
-- Beginner finance or banking clubs practicing risk assessment  
+The system then:
 
-Sports, banking, and similar domains are used as **test environments**. 
+1. Picks settings to try using AI
+2. Runs the chip design automatically
+3. Reads the results
+4. Learns from what worked and what didn't
+5. Suggests better settings each round
 
----
+The end result is better chip designs, in fewer tries.
 
-## Solution Overview
+## Why AI?
+Chip design is expensive and time-consuming, even for big companies.
 
-We propose a collaborative decision-making app where users submit:
+With just 8 settings and 10 possible values each:
 
-- **A decision**  
-  - Examples: “Approve this loan,” “Team A will win,” “We should fund this event”
-- **A confidence score**  
-  - Examples: 1–10 scale or a percentage
+10^8 = 100,000,000 possible combinations
 
-The system takes all inputs, tracks the outcomes, and uses AI to:
+No engineer can test all of those by hand.
 
-- Flag disagreements within the group  
-- Highlight missing perspectives or overlooked context  
-- Identify overconfidence or sharp divisions in opinion  
+**Without AI:**
+- Engineers guess and check manually
+- Each attempt can take weeks
 
-Over time, the app reveals:
-- Who is consistently accurate  
-- When groups outperform individuals  
-- How confidence aligns with real-world outcomes  
+**With AI:**
+- A model predicts which settings will perform well
+- The system focuses only on promising options
+- Bad configurations are skipped over
 
----
+AI turns chip design from guessing into a smart, guided process.
 
-## 4. Tech Stack Justification
-
-- **Python (Backend)**  
-  - Well-suited for data analysis, probability, and AI integration  
-
-- **Web Framework (Frontend)**  
-  - Enables a simple, responsive interface for fast group interaction  
-
-- **AI API**  
-  - Used as an advisor to provide insight and feedback, not to make final decisions  
+## Tech Stack
+- **Python** — Core
+- **Bayesian Optimization** — AI-driven searching
+- **OpenROAD** — Runs the actual chip design
+- **PostgreSQL** — Stores results and tracks progress
+- **Next.js** — Web interface for storing runs and viewing results
