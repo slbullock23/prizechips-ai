@@ -1,4 +1,4 @@
-# Blur's Proposal
+# PrizeChips Proposal
 
 ## Using AI to Make Chip Design Faster and Cheaper
 *How can we make designing chips quicker, more affordable, and smarter?*

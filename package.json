@@ -1,0 +1,54 @@
+{
+  "name": "prizechips",
+  "version": "0.1.0",
+  "description": "AI-powered chip design optimization",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "tsc -p tsconfig.electron.json && electron .",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "dist": "npm run build:electron && electron-builder",
+    "dist:mac": "npm run build:electron && electron-builder --mac",
+    "dist:win": "npm run build:electron && electron-builder --win",
+    "dist:linux": "npm run build:electron && electron-builder --linux"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "electron-updater": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.prizechips.app",
+    "productName": "PrizeChips",
+    "copyright": "Copyright © 2026",
+    "directories": {
+      "output": "release"
+    },
+    "extraResources": [
+      {
+        "from": "docker-compose.yml",
+        "to": "docker-compose.yml"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "icon": "electron/assets/icon.icns"
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "electron/assets/icon.ico"
+    },
+    "linux": {
+      "target": [{ "target": "AppImage", "arch": ["x64"] }],
+      "icon": "electron/assets/icon.png"
+    },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
+    }
+  }
+}
