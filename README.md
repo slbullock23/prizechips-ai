@@ -1,4 +1,11 @@
-# PrizeChips
+# 🏆 PrizeChips
+
+![PrizeChips Banner](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGV0amh3YnhrNXo5cTNpeHhjeDNmbjBoc3doaW9qbWgzcDdrOHk5bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jtXRDVzaCPXSynUz7h/giphy.gif)
+
+![GitHub stars](https://img.shields.io/github/stars/slbullock23/ai-decisionmaking?style=social)
+![GitHub forks](https://img.shields.io/github/forks/slbullock23/ai-decisionmaking?style=social)
+![GitHub issues](https://img.shields.io/github/issues/slbullock23/ai-decisionmaking)
+![License](https://img.shields.io/github/license/slbullock23/ai-decisionmaking)
 
 **AI-powered chip design optimization. Better results in fewer runs.**
 
