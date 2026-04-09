@@ -1,9 +1,5 @@
-# 🏗️ Architecture
-*"How the pieces talk to each other"*
+# Architecture - Updated System Design
 
-This document explains how the frontend, backend, database, and AI layer connect, how they function and how data moves throughout the system.
-
----
 
 
 ## System Components
@@ -11,69 +7,62 @@ The system is composed of four main pieces:
 
 - **Next.js (Frontend)**
   - User-facing interface
-  - Where users submit decisions and confidence levels
+  - Where users can input constraints for the chip.
   - Communicates with the backend through REST APIs
 
 - **FastAPI (Backend API)**
-  - Validates user input
   - Stores and retrieves user data
-  - Computes decisions and scores
+  - Computes optimized layout
   - Communicates directly with the AI (Ollama)
 
 - **PostgreSQL (Database)**
-  - Stores users, decisions, confidence scores, feedback, and final outcomes
-  - Stores historical performance data 
+  - Stores users, layouts, constraints, and input knobs
 
 - **Ollama (Local AI Runtime)**
-  - Analyzes group input
-  - Detects disagreement, groupthink, and risks
-  - Returns structured feedback and insights to the backend
+  - Analyzes past inputs, outputs, and patterns in the good and bad results
+  - Returns suggestions of inputs that may produce better results.
 
-#### Diagram
-![alt text](<ArchitectureDiagram.png>)
----
+
 
 ## Data Flow
-1. A user submits a decision along with a confidence score from the frontend  
-2. The backend validates and records the input in the database  
-3. The backend sends the aggregated data to the AI layer  
-4. The AI analyzes the inputs for:
-   - Conflicting opinions
-   - Overconfidence or imbalance
-   - Missing or overlooked context  
-5. Feedback is returned to the backend and sent to the user  
-6. Once the real-world outcome is known, it is logged and used to update scoring and accuracy metrics  
+1. A user submits constraints (power, timing, area limits, knob ranges, etc.).
 
-#### Diagram
-![alt text](<DataFlowDiagram.png>)
----
+2. The backend stores the constraints, retrieves past run data, and shapes the valid search space.
 
-# Architectural Decision Records (ADRs)
+3. The AI (Ollama) evaluates the constraints + past results and generates a batch of new candidate configurations.
 
-This document records key architectural decisions made for the system, including the reasoning behind them and their trade-offs.
+4. These configurations are scheduled and run through the EDA tools (e.g., OpenROAD/OpenLane).
 
----
+5. The backend parses the run results and feeds a summarized version back into the AI, creating a learning loop.
 
-## ADR 1: Use Ollama for Local AI Runtime
+6. This loop repeats until enough good results are found.
 
-### Decision
+7. The dashboard visualizes all constraints, runs, results, and AI suggestions for the user.
+
+
+## Architectural Decision Records (ADRs)
+
+
+### ADR 1: Use Ollama for Local AI Runtime
+
+#### Decision
 Use Ollama to run AI models locally for analysis and feedback generation.
 
-### Rationale
+#### Rationale
 - The application requires AI to analyze group decisions and generate insights
 - Ollama provides a simple way to run and switch between models locally
 - The backend can communicate directly with Ollama through an API
 
-### Consequences
+#### Consequences
 
-#### Pros
+##### Pros
 - Offline and local inference (no cloud dependency)
 - Strong data privacy (user data stays on the machine or private network)
 - No per-token or subscription costs
 - Easy experimentation with different models
 - Full control over performance and optimization
 
-#### Cons
+##### Cons
 - Performance depends on available CPU/GPU
 - Requires maintaining models and runtime updates
 - Not ideal for very large-scale or highly concurrent usage
@@ -81,26 +70,26 @@ Use Ollama to run AI models locally for analysis and feedback generation.
 
 ---
 
-## ADR 2: Use FastAPI as the Backend Framework
+### ADR 2: Use FastAPI as the Backend Framework
 
-### Decision
+#### Decision
 Use FastAPI as the backend API framework.
 
-### Rationale
+#### Rationale
 - The backend handles frontend requests, business logic, AI orchestration, and database access
 - FastAPI offers strong performance, clear structure, and excellent Python support
 - It integrates well with AI and data-processing libraries
 
-### Consequences
+#### Consequences
 
-#### Pros
+##### Pros
 - High performance for typical API workloads
 - Automatic request validation using type hints
 - Async support for handling concurrent requests
 - Built-in interactive API documentation
 - Large ecosystem and strong community support
 
-#### Cons
+##### Cons
 - Python can struggle under extreme concurrency
 - Async programming requires careful design
 - Production deployments need extra setup (e.g., Uvicorn + Gunicorn)
