@@ -1,6 +1,7 @@
 # Architecture - Updated System Design
 
 
+
 ## System Components
 The system is composed of four main pieces:
 
