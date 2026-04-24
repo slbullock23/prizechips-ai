@@ -9,6 +9,25 @@ const STATUS_STYLES: Record<string, string> = {
   failed:    "bg-red-500/15 text-red-400 border-red-500/20",
 };
 
+function toUtc(ts: string): Date {
+  return new Date(ts.endsWith("Z") ? ts : ts + "Z");
+}
+
+function formatRuntime(startedAt: string | null, completedAt: string | null): string {
+  if (!startedAt) return "";
+  const start = toUtc(startedAt);
+  const end = completedAt ? toUtc(completedAt) : new Date();
+  const ms = end.getTime() - start.getTime();
+  if (ms < 0) return "";
+
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(2)}s`;
+  const totalSec = ms / 1000;
+  const minutes = Math.floor(totalSec / 60);
+  const secs = (totalSec % 60).toFixed(2);
+  return `${minutes}m ${secs}s`;
+}
+
 export default function RunCard({
   run,
   onClick,
@@ -29,6 +48,8 @@ export default function RunCard({
       onClick();
     }
   }
+
+  const runtime = formatRuntime(run.started_at, run.completed_at);
 
   return (
     <motion.div
@@ -75,6 +96,12 @@ export default function RunCard({
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
         )}
         <span>{run.max_iterations} iterations</span>
+        {runtime && (
+          <>
+            <span className="opacity-30">·</span>
+            <span>{runtime}</span>
+          </>
+        )}
         <span className="opacity-30">·</span>
         <span>{new Date(run.created_at).toLocaleDateString()}</span>
       </div>

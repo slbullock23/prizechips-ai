@@ -74,6 +74,8 @@ class Run(Base):
     max_iterations = Column(Integer, default=10)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    started_at = Column(DateTime, nullable=True)
+    completed_at = Column(DateTime, nullable=True)
 
     owner = relationship("User", back_populates="runs")
     constraints = relationship("Constraint", back_populates="run", cascade="all, delete-orphan")

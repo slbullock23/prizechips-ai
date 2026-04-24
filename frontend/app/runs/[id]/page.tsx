@@ -40,6 +40,58 @@ function MetricCard({ label, value, unit, delay }: { label: string; value?: numb
   );
 }
 
+function toUtc(ts: string): Date {
+  // Backend returns naive UTC strings without 'Z' — force UTC parsing
+  return new Date(ts.endsWith("Z") ? ts : ts + "Z");
+}
+
+function formatRuntime(startedAt: string | null, completedAt: string | null, currentTime?: Date): string {
+  if (!startedAt) return "—";
+  const start = toUtc(startedAt);
+  const end = completedAt ? toUtc(completedAt) : (currentTime || new Date());
+  const ms = end.getTime() - start.getTime();
+  if (ms < 0) return "—";
+
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(2)}s`;
+  const totalSec = ms / 1000;
+  const minutes = Math.floor(totalSec / 60);
+  const secs = (totalSec % 60).toFixed(2);
+  return `${minutes}m ${secs}s`;
+}
+
+function validExplanation(s: string | null | undefined): string | null {
+  if (!s) return null;
+  if (s.startsWith("Ollama is not running") || s.startsWith("AI explanation unavailable")) return null;
+  return s;
+}
+
+function calculatePPADelta(configs: Configuration[]): { power: number | null; wns: number | null; area: number | null } {
+  const firstResult = configs[0]?.result;
+  const bestConfig = configs
+    .filter((c) => c.result?.wns !== null)
+    .sort((a, b) => (b.result!.wns! - a.result!.wns!))
+    .at(0);
+
+  if (!firstResult || !bestConfig?.result) {
+    return { power: null, wns: null, area: null };
+  }
+
+  const powerDelta = bestConfig.result.power && firstResult.power
+    ? ((firstResult.power - bestConfig.result.power) / firstResult.power) * 100
+    : null;
+
+  const wnsDelta = bestConfig.result.wns && firstResult.wns
+    ? ((bestConfig.result.wns - firstResult.wns) / Math.abs(firstResult.wns)) * 100
+    : null;
+
+  const areaDelta = bestConfig.result.area && firstResult.area
+    ? ((firstResult.area - bestConfig.result.area) / firstResult.area) * 100
+    : null;
+
+  return { power: powerDelta, wns: wnsDelta, area: areaDelta };
+}
+
 export default function RunDetailPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -52,6 +104,7 @@ export default function RunDetailPage() {
   const [submitTeamId, setSubmitTeamId] = useState<number | null>(null);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewDropdownOpen, setReviewDropdownOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     if (!loading && !user && !getToken()) router.replace("/login");
@@ -80,6 +133,13 @@ export default function RunDetailPage() {
     return () => clearTimeout(timer);
   }, [user, fetchData]);
 
+  // Update current time for live runtime display during running
+  useEffect(() => {
+    if (!run || run.status !== "running") return;
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, [run]);
+
   // Load user's teams for "Submit for Review"
   useEffect(() => {
     if (!user) return;
@@ -94,6 +154,9 @@ export default function RunDetailPage() {
     .at(0);
 
   const engineName = configs.find((c) => c.result?.engine_name)?.result?.engine_name;
+  const runtime = formatRuntime(run.started_at, run.completed_at, currentTime);
+  const iterationCount = configs.length;
+  const ppaDelta = calculatePPADelta(configs);
 
   async function handleSubmitForReview() {
     if (!bestConfig || !submitTeamId) return;
@@ -148,7 +211,7 @@ export default function RunDetailPage() {
           >
             <p className="text-xs text-muted-foreground mb-1">Progress</p>
             <p className="text-2xl font-bold font-mono">
-              {configs.length}
+              {iterationCount}
               <span className="text-sm font-normal text-muted-foreground">/{run.max_iterations}</span>
             </p>
           </motion.div>
@@ -156,6 +219,37 @@ export default function RunDetailPage() {
           <MetricCard label="Best Power" value={bestConfig?.result?.power} unit="mW" delay={0.15} />
           <MetricCard label="Best Area" value={bestConfig?.result?.area} unit="um2" delay={0.2} />
         </div>
+
+        {/* Runtime and PPA Delta cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+        >
+          <div className="glass rounded-xl p-5">
+            <p className="text-xs text-muted-foreground mb-1">Runtime</p>
+            <p className="text-2xl font-bold font-mono">{runtime}</p>
+          </div>
+          <div className="glass rounded-xl p-5">
+            <p className="text-xs text-muted-foreground mb-1">Power Δ</p>
+            <p className={`text-2xl font-bold font-mono ${ppaDelta.power != null && ppaDelta.power > 0 ? "text-emerald-400" : "text-muted-foreground"}`}>
+              {ppaDelta.power != null ? `${ppaDelta.power > 0 ? "+" : ""}${ppaDelta.power.toFixed(1)}%` : "—"}
+            </p>
+          </div>
+          <div className="glass rounded-xl p-5">
+            <p className="text-xs text-muted-foreground mb-1">Timing Δ</p>
+            <p className={`text-2xl font-bold font-mono ${ppaDelta.wns != null && ppaDelta.wns > 0 ? "text-emerald-400" : "text-muted-foreground"}`}>
+              {ppaDelta.wns != null ? `${ppaDelta.wns > 0 ? "+" : ""}${ppaDelta.wns.toFixed(1)}%` : "—"}
+            </p>
+          </div>
+          <div className="glass rounded-xl p-5">
+            <p className="text-xs text-muted-foreground mb-1">Area Δ</p>
+            <p className={`text-2xl font-bold font-mono ${ppaDelta.area != null && ppaDelta.area > 0 ? "text-emerald-400" : "text-muted-foreground"}`}>
+              {ppaDelta.area != null ? `${ppaDelta.area > 0 ? "+" : ""}${ppaDelta.area.toFixed(1)}%` : "—"}
+            </p>
+          </div>
+        </motion.div>
 
         {/* Constraints */}
         {run.constraints.length > 0 && (
@@ -264,12 +358,12 @@ export default function RunDetailPage() {
                       ))}
                     </div>
 
-                    {bestConfig.result?.ai_explanation && (
+                    {validExplanation(bestConfig.result?.ai_explanation) && (
                       <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
                         <p className="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-2 font-semibold">
-                          AI Explanation (gemma3:4b via Ollama)
+                          AI Explanation (llama3.2 via Ollama)
                         </p>
-                        <p className="text-sm leading-relaxed">{bestConfig.result.ai_explanation}</p>
+                        <p className="text-sm leading-relaxed">{validExplanation(bestConfig.result?.ai_explanation)}</p>
                       </div>
                     )}
 
