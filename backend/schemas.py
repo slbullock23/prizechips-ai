@@ -63,6 +63,8 @@ class RunOut(BaseModel):
     max_iterations: int
     created_at: datetime
     updated_at: datetime
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
     constraints: list[ConstraintOut] = []
     knob_specs: Optional[list[dict]] = None
 
@@ -75,6 +77,8 @@ class RunSummary(BaseModel):
     status: RunStatus
     max_iterations: int
     created_at: datetime
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
     summary: Optional[str] = None
 
     model_config = {"from_attributes": True}

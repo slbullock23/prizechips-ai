@@ -5,6 +5,12 @@ import { Configuration } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 
+function validExplanation(s: string | null | undefined): string | null {
+  if (!s) return null;
+  if (s.startsWith("Ollama is not running") || s.startsWith("AI explanation unavailable")) return null;
+  return s;
+}
+
 export default function ResultsTable({ configs }: { configs: Configuration[] }) {
   const [expanded, setExpanded] = useState<number | null>(null);
 
@@ -60,11 +66,11 @@ export default function ResultsTable({ configs }: { configs: Configuration[] }) 
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground text-xs">
-                    {c.result?.ai_explanation ? (expanded === c.id ? "▲" : "▼") : ""}
+                    {validExplanation(c.result?.ai_explanation) ? (expanded === c.id ? "▲" : "▼") : ""}
                   </td>
                 </tr>
 
-                {expanded === c.id && c.result?.ai_explanation && (
+                {expanded === c.id && validExplanation(c.result?.ai_explanation) && (
                   <motion.tr
                     key={`${c.id}-exp`}
                     initial={{ opacity: 0 }}
@@ -76,7 +82,7 @@ export default function ResultsTable({ configs }: { configs: Configuration[] }) 
                         <p className="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-2 font-semibold">
                           AI Explanation
                         </p>
-                        <p className="text-sm leading-relaxed">{c.result.ai_explanation}</p>
+                        <p className="text-sm leading-relaxed">{validExplanation(c.result?.ai_explanation)}</p>
                       </div>
                     </td>
                   </motion.tr>

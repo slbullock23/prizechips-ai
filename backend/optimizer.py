@@ -7,6 +7,7 @@ intelligently search the knob space, guided by past simulation results.
 
 import logging
 from dataclasses import dataclass
+from datetime import datetime
 
 from skopt import Optimizer
 from skopt.space import Real
@@ -69,8 +70,9 @@ def run_optimization(run_id: int, knob_specs: list[KnobSpec], db: Session) -> No
         for k in knob_specs
     ]
 
-    # Mark as running
+    # Mark as running and record start time
     run.status = models.RunStatus.running
+    run.started_at = datetime.utcnow()
     db.commit()
 
     try:
@@ -158,10 +160,12 @@ def run_optimization(run_id: int, knob_specs: list[KnobSpec], db: Session) -> No
             run = db.query(models.Run).filter(models.Run.id == run_id).first()
             run.status = models.RunStatus.completed
 
+        run.completed_at = datetime.utcnow()
+
     except Exception:
         log.exception("Optimization run %d failed", run_id)
         db.query(models.Run).filter(models.Run.id == run_id).update(
-            {models.Run.status: models.RunStatus.failed}
+            {models.Run.status: models.RunStatus.failed, models.Run.completed_at: datetime.utcnow()}
         )
 
     finally:

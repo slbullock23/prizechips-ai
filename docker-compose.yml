@@ -29,6 +29,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
       OLLAMA_BASE_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      OLLAMA_TIMEOUT: 300
     ports:
       - "8000:8000"
     depends_on:

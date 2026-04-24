@@ -68,21 +68,8 @@ def _build_prompt(knobs: dict, constraints: list[dict], wns: float, tns: float, 
         f"  - {c['metric']}: min={c.get('min_val')}, max={c.get('max_val')}" for c in constraints
     ) or "  (none specified)"
 
-    return f"""You are an AI assistant helping chip design engineers interpret optimization results.
-
-User constraints:
-{constraint_lines}
-
-Configuration tried:
-{knob_lines}
-
-Simulation results:
-  - Worst Negative Slack (WNS): {wns:.4f} ns  (target: >= 0 for timing closure)
-  - Total Negative Slack (TNS): {tns:.4f} ns  (target: 0)
-  - Power: {power:.3f} mW
-  - Area: {area:.1f} um²
-
-In 2-3 sentences, explain why this configuration was selected by the optimizer and what the results mean for the chip design. Be specific about timing, power, and area trade-offs."""
+    return f"""Chip design result. Knobs: {knob_lines}. WNS={wns:.3f}ns, Power={power:.1f}mW, Area={area:.0f}um2. Constraints: {constraint_lines}.
+In 1-2 sentences, explain the timing/power/area trade-off. Be concise."""
 
 
 def get_explanation(knobs: dict, constraints: list[dict], wns: float, tns: float, power: float, area: float) -> str:
@@ -100,13 +87,8 @@ def get_explanation(knobs: dict, constraints: list[dict], wns: float, tns: float
             )
             response.raise_for_status()
             return response.json().get("response", "").strip()
-    except (httpx.ConnectError, httpx.TimeoutException):
-        return (
-            f"Ollama is not running — no AI explanation available. "
-            f"Results: WNS={wns:.4f}ns, TNS={tns:.4f}ns, power={power:.3f}mW, area={area:.1f}um²."
-        )
-    except Exception as exc:
-        return f"AI explanation unavailable ({type(exc).__name__}): {exc}"
+    except (httpx.ConnectError, httpx.TimeoutException, Exception):
+        return ""
 
 
 def get_run_summary(run_name: str, iterations: int, best_wns: float, best_power: float, best_area: float) -> str:
@@ -120,13 +102,8 @@ def get_run_summary(run_name: str, iterations: int, best_wns: float, best_power:
         else "The chip could not quite reach its target speed."
     )
     prompt = (
-        f"Explain a computer chip optimization result in one sentence (under 20 words) "
-        f"to someone who knows nothing about engineering. "
-        f"Use only plain everyday language — no technical terms whatsoever. "
-        f"Facts: {timing_fact} "
-        f"Power draw is about {best_power:.0f} milliwatts (like a dim LED). "
-        f"The chip's physical size is {best_area:.0f} square micrometers (microscopic). "
-        f"Write only the sentence, nothing else."
+        f"One sentence, plain English, no jargon: {timing_fact} "
+        f"Power: {best_power:.0f}mW. Size: {best_area:.0f}um2. Write only the sentence."
     )
     try:
         with httpx.Client(timeout=OLLAMA_TIMEOUT) as client:
